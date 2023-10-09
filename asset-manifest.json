@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/NestNet/static/css/main.5a733936.css",
+    "main.js": "/NestNet/static/js/main.d8b3f610.js",
+    "static/js/496.0c044e9f.chunk.js": "/NestNet/static/js/496.0c044e9f.chunk.js",
+    "static/media/store.jpg": "/NestNet/static/media/store.a38dea74efcae02fb547.jpg",
+    "static/media/logo.png": "/NestNet/static/media/logo.7c913e531042db70cc13.png",
+    "index.html": "/NestNet/index.html",
+    "main.5a733936.css.map": "/NestNet/static/css/main.5a733936.css.map",
+    "main.d8b3f610.js.map": "/NestNet/static/js/main.d8b3f610.js.map",
+    "496.0c044e9f.chunk.js.map": "/NestNet/static/js/496.0c044e9f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5a733936.css",
+    "static/js/main.d8b3f610.js"
+  ]
+}
