@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/NestNet/static/css/main.5a733936.css",
-    "main.js": "/NestNet/static/js/main.5dd1872e.js",
+    "main.js": "/NestNet/static/js/main.75d15266.js",
     "static/js/496.74c231ed.chunk.js": "/NestNet/static/js/496.74c231ed.chunk.js",
     "static/media/store.jpg": "/NestNet/static/media/store.a38dea74efcae02fb547.jpg",
     "static/media/logo.png": "/NestNet/static/media/logo.7c913e531042db70cc13.png",
@@ -12,13 +12,14 @@
     "static/media/ad.gif": "/NestNet/static/media/ad.bcdebff2c64c0f5a39a2.gif",
     "static/media/signup.svg": "/NestNet/static/media/signup.2137356ccc0c4edeb332e54786f2be4e.svg",
     "static/media/illustration_login.png": "/NestNet/static/media/illustration_login.c0c19451de920ff0d8bc.png",
+    "static/media/illustration_404.svg": "/NestNet/static/media/illustration_404.e265cb33400831b9ab3259ba28222e1f.svg",
     "index.html": "/NestNet/index.html",
     "main.5a733936.css.map": "/NestNet/static/css/main.5a733936.css.map",
-    "main.5dd1872e.js.map": "/NestNet/static/js/main.5dd1872e.js.map",
+    "main.75d15266.js.map": "/NestNet/static/js/main.75d15266.js.map",
     "496.74c231ed.chunk.js.map": "/NestNet/static/js/496.74c231ed.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.5a733936.css",
-    "static/js/main.5dd1872e.js"
+    "static/js/main.75d15266.js"
   ]
 }
