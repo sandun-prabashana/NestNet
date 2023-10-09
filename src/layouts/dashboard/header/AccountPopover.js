@@ -1,110 +1,83 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Avatar, Box, Divider, IconButton, MenuItem, Popover, Stack, Typography } from '@mui/material';
+import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { db } from "../../../pages/FireBaseConfig2";
 import { useNavigate } from 'react-router-dom';
-// @mui
-import { alpha } from '@mui/material/styles';
-import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
-// mocks_
-import account from '../../../_mock/account';
+import UserProfile from '../profile/UserProfile';
 
-// ----------------------------------------------------------------------
+export default function AccountPopover() {
+    const [open, setOpen] = useState(null);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+    const navigate = useNavigate();
+    const displayName = sessionStorage.getItem('name');
+    const email = sessionStorage.getItem('email');
 
-const MENU_OPTIONS = [
-  {
-    label: 'Home',
-    icon: 'eva:home-fill',
-  },
-  {
-    label: 'Profile',
-    icon: 'eva:person-fill',
-  },
-  {
-    label: 'Settings',
-    icon: 'eva:settings-2-fill',
-  },
-];
+    const audittraceCollectionRef = collection(db, "audittrace");
 
-// ----------------------------------------------------------------------
+    const randomID = Math.floor(Math.random() * 1000000);
+  
+    const currentTime = new Date().toISOString();
 
-export default function AccountPopover(props) {
-  const [open, setOpen] = useState(null);
-  const navigate = useNavigate();
+    const handleOpen = (event) => setOpen(event.currentTarget);
+    const handleClose = () => setOpen(null);
 
-  const handleOpen = (event) => {
-    setOpen(event.currentTarget);
-  };
+    const handleLogout = () => {
 
-  const handleClose = () => {
-    navigate('/', { replace: true });
-    sessionStorage.clear();
-    setOpen(null);
-  };
+        const userIP = "0.0.0.0"; 
 
-  return (
-    <>
-      <IconButton
-        onClick={handleOpen}
-        sx={{
-          p: 0,
-          ...(open && {
-            '&:before': {
-              zIndex: 1,
-              content: "''",
-              width: '100%',
-              height: '100%',
-              borderRadius: '50%',
-              position: 'absolute',
-              bgcolor: (theme) => alpha(theme.palette.grey[900], 0.8),
-            },
-          }),
-        }}
-      >
-        <Avatar src={account.photoURL} alt="photoURL" />
-      </IconButton>
+         addDoc(audittraceCollectionRef, {
+          AUDITTRACEID: `trace${randomID}`, 
+          CREATEDTIME: currentTime,
+          DESCRIPTION: "Log Out",
+          IP: userIP,
+          LASTUPDATEDTIME: currentTime,
+          LASTUPDATEDUSER: sessionStorage.getItem("name"),
+          EMAIL: sessionStorage.getItem("email"),
+        });
 
-      <Popover
-        open={Boolean(open)}
-        anchorEl={open}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          sx: {
-            p: 0,
-            mt: 1.5,
-            ml: 0.75,
-            width: 180,
-            '& .MuiMenuItem-root': {
-              typography: 'body2',
-              borderRadius: 0.75,
-            },
-          },
-        }}
-      >
-        <Box sx={{ my: 1.5, px: 2.5 }}>
-          <Typography variant="subtitle2" noWrap>
-            {account.displayName}
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {account.email}
-          </Typography>
-        </Box>
+        sessionStorage.clear();
+        navigate('/login');
+        
+    };
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+    const handleOpenProfile = () => {
+        setIsProfileModalOpen(true);
+        handleClose(); // Close the account popover when opening the profile modal
+    };
 
-        <Stack sx={{ p: 1 }}>
-          {MENU_OPTIONS.map((option) => (
-            <MenuItem key={option.label} onClick={handleClose}>
-              {option.label}
-            </MenuItem>
-          ))}
-        </Stack>
+    const handleCloseProfile = () => setIsProfileModalOpen(false);
 
-        <Divider sx={{ borderStyle: 'dashed' }} />
+    return (
+        <>
+            <IconButton onClick={handleOpen}>
+                <Avatar src='/assets/images/avatars/avatar_default.jpg' alt={displayName} />
+            </IconButton>
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
-          Logout
-        </MenuItem>
-      </Popover>
-    </>
-  );
+            <Popover
+                open={Boolean(open)}
+                anchorEl={open}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Box sx={{ my: 2, px: 2.5 }}>
+                    <Typography variant="subtitle2" noWrap>{displayName}</Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>{email}</Typography>
+                </Box>
+                <Divider sx={{ borderStyle: 'dashed' }} />
+                <Stack sx={{ p: 1 }}>
+                <MenuItem onClick={() => navigate('/user/dashboard')}>
+                        Home
+                    </MenuItem>
+                    <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
+
+                </Stack>
+                <Divider sx={{ borderStyle: 'dashed' }} />
+                <MenuItem onClick={handleLogout} sx={{ m: 1 }}>Logout</MenuItem>
+            </Popover>
+
+            {/* UserProfile modal */}
+            <UserProfile isModalOpen={isProfileModalOpen} handleCloseModal={handleCloseProfile} userEmail={email} />
+        </>
+    );
 }

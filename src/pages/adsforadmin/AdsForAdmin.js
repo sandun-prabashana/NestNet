@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Container } from "@mui/material";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
-import { db } from "../pages/FireBaseConfig2";
+import { db } from "../FireBaseConfig2";
 import EditIcon from "@mui/icons-material/Edit";
 import { updateDoc, doc } from "firebase/firestore";
 import {
@@ -29,179 +29,10 @@ import {
 } from "@mui/material";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
-import {
-  AppWidgetSummary,
-  AppWebsiteVisits,
-  AppCurrentVisits,
-} from "../sections/@dashboard/app";
+
 // import "../../utils/property.css";
 
-export default function DashboardAppPage() {
-  const [customerCount, setCustomerCount] = useState(0);
-  const [ongoingAdsCount, setOngoingAdsCount] = useState(0);
-  const [soldAdsCount, setSoldAdsCount] = useState(0);
-
-  const email = sessionStorage.getItem("email"); // Get the email from session storage
-
-  const [newStatus, setNewStatus] = useState(""); // New state to manage selected status
-
-  const audittraceCollectionRef = collection(db, "audittrace");
-
-  const randomID = Math.floor(Math.random() * 1000000);
-
-  const currentTime = new Date().toISOString();
-
-  const handleStatusChange = (event) => {
-    setNewStatus(event.target.value);
-  };
-
-  const updateStatus = async () => {
-    if (selectedProperty && newStatus) {
-      try {
-        // Query to find the document that has the 'id' field equal to selectedProperty.id
-        const docQuery = query(
-          collection(db, "posts"),
-          where("id", "==", selectedProperty.id)
-        );
-        const querySnapshot = await getDocs(docQuery);
-
-        if (querySnapshot.empty) {
-          console.error("No matching documents.");
-          return;
-        }
-
-        querySnapshot.forEach(async (doc) => {
-          await updateDoc(doc.ref, { status: newStatus });
-        });
-
-      
-        setOpenContactDialog(false);
-
-        fetchData();
-
-        fetchProperties();
-
-        const userIP = "0.0.0.0"; 
-
-        await addDoc(audittraceCollectionRef, {
-          AUDITTRACEID: `trace${randomID}`, 
-          CREATEDTIME: currentTime,
-          DESCRIPTION: "Change Ad Status To "+newStatus+" (Ad ID : "+selectedProperty.id+")",
-          IP: userIP,
-          LASTUPDATEDTIME: currentTime,
-          LASTUPDATEDUSER: sessionStorage.getItem("name"),
-          EMAIL: sessionStorage.getItem("email"),
-        });
-
-      } catch (error) {
-        console.error("Error updating status: ", error);
-      }
-    }
-  };
-
-  const fetchData = async () => {
-    try {
-      const allAdsQuery = query(
-        collection(db, "posts"),
-        where("email", "==", email)
-      );
-      const allAds = await getDocs(allAdsQuery);
-      setCustomerCount(allAds.size || 0);
-
-      const ongoingAdsQuery = query(
-        collection(db, "posts"),
-        where("email", "==", email),
-        where("status", "==", "ACTIVE")
-      );
-      const ongoingAds = await getDocs(ongoingAdsQuery);
-      setOngoingAdsCount(ongoingAds.size || 0);
-
-      const soldAdsQuery = query(
-        collection(db, "posts"),
-        where("email", "==", email),
-        where("status", "==", "SOLD")
-      );
-      const soldAds = await getDocs(soldAdsQuery);
-      setSoldAdsCount(soldAds.size || 0);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-      setCustomerCount(0);
-      setOngoingAdsCount(0);
-      setSoldAdsCount(0);
-    }
-  };
-
-  const fetchProperties = async () => {
-    try {
-      const propertiesCollection = collection(db, "posts");
-      const propertiesQuery = query(
-        propertiesCollection,
-        where("email", "==", email)
-      );
-      const propertiesSnapshot = await getDocs(propertiesQuery);
-      const propertiesList = propertiesSnapshot.docs.map((doc) => doc.data());
-      setProperties(propertiesList);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching properties: ", error);
-      setProperties([]);
-      setLoading(false);
-    }
-  };
-
-  const handleStatusUpdate = async (newStatus) => {
-    if (selectedProperty) {
-      try {
-        await updateDoc(doc(db, "posts", selectedProperty.id), {
-          status: newStatus,
-        });
-        // fetchProperties();
-      } catch (error) {
-        console.error("Error updating status: ", error);
-      }
-    }
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const allAdsQuery = query(
-          collection(db, "posts"),
-          where("email", "==", email)
-        );
-        const allAds = await getDocs(allAdsQuery);
-        setCustomerCount(allAds.size || 0);
-
-        const ongoingAdsQuery = query(
-          collection(db, "posts"),
-          where("email", "==", email),
-          where("status", "==", "ACTIVE")
-        );
-        const ongoingAds = await getDocs(ongoingAdsQuery);
-        setOngoingAdsCount(ongoingAds.size || 0);
-
-        const soldAdsQuery = query(
-          collection(db, "posts"), // Note: You used "ads" in your previous code. Ensure to use the correct collection name.
-          where("email", "==", email),
-          where("status", "==", "SOLD")
-        );
-        const soldAds = await getDocs(soldAdsQuery);
-        setSoldAdsCount(soldAds.size || 0);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-        setCustomerCount(0);
-        setOngoingAdsCount(0);
-        setSoldAdsCount(0);
-      }
-    };
-
-    fetchData();
-  }, [email]);
-
-  useEffect(() => {
-    console.log(soldAdsCount); // Log the updated state
-  }, [soldAdsCount]);
-
+export default function AdsForAdmin() {
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [filters, setFilters] = useState({
@@ -215,9 +46,9 @@ export default function DashboardAppPage() {
   const [contactDetails, setContactDetails] = useState(null);
   const [openContactDialog, setOpenContactDialog] = useState(false);
 
-  const handleContactClick = async (id) => {
-    const usersCollection = collection(db, "posts");
-    const userQuery = query(usersCollection, where("id", "==", id));
+  const handleContactClick = async (email) => {
+    const usersCollection = collection(db, "users");
+    const userQuery = query(usersCollection, where("email", "==", email));
     const userSnapshot = await getDocs(userQuery);
 
     if (!userSnapshot.empty) {
@@ -260,11 +91,11 @@ export default function DashboardAppPage() {
   useEffect(() => {
     const fetchProperties = async () => {
       const propertiesCollection = collection(db, "posts");
-      const propertiesQuery = query(
-        propertiesCollection,
-        where("email", "==", email)
-      );
-      const propertiesSnapshot = await getDocs(propertiesQuery);
+      // const propertiesQuery = query(
+      //   propertiesCollection,
+      //   where("email", "==", email)
+      // );
+      const propertiesSnapshot = await getDocs(propertiesCollection);
       const propertiesList = propertiesSnapshot.docs.map((doc) => doc.data());
       setProperties(propertiesList);
       setLoading(false);
@@ -323,41 +154,13 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title>Dashboard | Your App</title>
+        <title>Ads | NestNet</title>
       </Helmet>
 
       <Container maxWidth="xl">
         <Typography variant="h4" sx={{ mb: 5 }}>
           Hi, Welcome back
         </Typography>
-
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={4}>
-            <AppWidgetSummary
-              title="All Ads"
-              total={customerCount}
-              icon={"iconoir:post"}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <AppWidgetSummary
-              title="On Going Ads"
-              total={ongoingAdsCount}
-              color="error"
-              icon={"ic:round-post-add"}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <AppWidgetSummary
-              title="Sold Ads"
-              total={soldAdsCount}
-              color="warning"
-              icon={"fluent-mdl2:post-update"}
-            />
-          </Grid>
-        </Grid>
       </Container>
       <Box>
         {loading ? (
@@ -399,7 +202,7 @@ export default function DashboardAppPage() {
                     />
                     {property.status === "SOLD" && (
                       <img
-                      src="/assets/images/sold.png"
+                        src="/assets/images/sold.png"
                         alt="Sold"
                         style={{
                           position: "absolute",
@@ -557,16 +360,14 @@ export default function DashboardAppPage() {
                     </Typography>
                     <br></br>
                     <Typography variant="body1" style={{ fontWeight: "bold" }}>
-                      Status:{" "}
-                      <span style={{ fontWeight: "bold", color: "red" }}>
-                        {selectedProperty.status}
-                      </span>
-                      <IconButton
-                        onClick={() => handleContactClick(selectedProperty.id)}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Typography>
+                    Contact Details{" "}
+                  </Typography>
+                  <IconButton
+                    onClick={() => handleContactClick(selectedProperty.email)}
+                  >
+                    <ContactMailIcon />
+                    <span style={{ fontWeight: "bold" }}></span>
+                  </IconButton>
                   </DialogContent>
                 </>
               )}
@@ -577,35 +378,27 @@ export default function DashboardAppPage() {
             >
               {contactDetails && (
                 <>
-                  <DialogTitle>Change Status</DialogTitle>
+                  <DialogTitle>Contact Details</DialogTitle>
                   <DialogContent>
                     <Typography variant="body1">
-                      Name:{contactDetails.status}
+                      Name: {contactDetails.userName}
                     </Typography>
-                    <FormControl fullWidth variant="outlined" margin="normal">
-                      <InputLabel id="status-label">Status</InputLabel>
-                      <Select
-                        labelId="status-label"
-                        id="status"
-                        value={newStatus}
-                        onChange={handleStatusChange}
-                        label="Status"
-                      >
-                        <MenuItem value={"ACTIVE"}>ACTIVE</MenuItem>
-                        <MenuItem value={"SOLD"}>SOLD</MenuItem>
-                        {/* Add more status options as needed */}
-                      </Select>
-                    </FormControl>
+                    <Typography variant="body1">
+                      Email: {contactDetails.email}
+                    </Typography>
+                    <Typography variant="body1">
+                      Phone: {contactDetails.phoneNumber}
+                    </Typography>
+                    <Typography variant="body1">
+                      Address: {contactDetails.address}, {contactDetails.city}
+                    </Typography>
                   </DialogContent>
                   <DialogActions>
-                    <Button onClick={updateStatus} color="primary">
-                      Update
-                    </Button>
                     <Button
                       onClick={() => setOpenContactDialog(false)}
-                      color="secondary"
+                      color="primary"
                     >
-                      Cancel
+                      Close
                     </Button>
                   </DialogActions>
                 </>

@@ -1,0 +1,132 @@
+.landing-page {
+    background: url('../images/store.jpg') center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .overlay {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 50px;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+  }
+  
+  /* .title {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+  } */
+  
+  .description {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+  }
+  
+  .buttons .btn {
+    color: #fff;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  
+  .register-btn {
+    background-color: #4CAF50;
+  }
+  
+  .login-btn {
+    background-color: #f44336;
+  }
+
+  .buttons .register-btn:hover {
+    background: #fff;
+    color: #000;
+  }
+  
+  .buttons .login-btn:hover {
+    background: #fff;
+    color: #000;
+  }
+  
+  .buttons .btn:hover {
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* .title {
+    animation: fadeInUp 1.5s ease-out;
+  } */
+
+  .description {
+    font-size: 1.25rem;
+    margin-bottom: 30px;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.fade-in {
+    opacity: 1;
+}
+
+.fade-out {
+    opacity: 0;
+}
+
+
+
+.title span {
+  display: inline-block;
+  animation: animate 3s ease infinite;
+}
+
+.title span:nth-child(1) { animation-delay: 0s; }
+.title span:nth-child(2) { animation-delay: 0.3s; }
+.title span:nth-child(3) { animation-delay: 0.6s; }
+.title span:nth-child(4) { animation-delay: 0.9s; }
+.title span:nth-child(5) { animation-delay: 1.2s; }
+.title span:nth-child(6) { animation-delay: 1.5s; }
+.title span:nth-child(7) { animation-delay: 1.8s; }
+.title span:nth-child(8) { animation-delay: 2.1s; }
+.title span:nth-child(9) { animation-delay: 2.4s; }
+
+@keyframes animate {
+  0%,100%{
+      color: #fff;
+      filter: blur(2px);
+      text-shadow: 0 0 10px #ff9d00,
+                   0 0 20px #ff9d00,
+                   0 0 40px #ff9d00,
+                   0 0 80px #ff9d00,
+                   0 0 120px #ff9d00,
+                   0 0 200px #ff9d00,
+                   0 0 300px #ff9d00,
+                   0 0 400px #ff9d00;
+  }
+  5%,95%{
+      color: #c6c6c6;
+      filter: blur(0px);
+      text-shadow: none;
+  }
+}
+
+.title {
+  font-size: 60px;
+  letter-spacing: 10px;
+}
+
+  

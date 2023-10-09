@@ -15,6 +15,11 @@ import { LoadingButton } from "@mui/lab";
 // components
 import Iconify from "../../../components/iconify";
 import Config from "../../../Config";
+import { database } from "../../../pages/FireBaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { db } from "../../../pages/FireBaseConfig2";
+import { collection, addDoc } from "firebase/firestore";
+import emailjs from 'emailjs-com';
 
 // ----------------------------------------------------------------------
 
@@ -24,10 +29,11 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+
   const {
     control,
-    handleSubmit,
     formState: { errors },
+    handleSubmit,
     reset,
   } = useForm();
 
@@ -48,53 +54,116 @@ export default function RegisterForm() {
     return age;
   };
 
+  const usersCollectionRef = collection(db, "users");
+  const audittraceCollectionRef = collection(db, "audittrace");
+
+  const randomID = Math.floor(Math.random() * 1000000);
+
+  const currentTime = new Date().toISOString();
+
+  const sendWelcomeEmail = (userEmail,name,email) => {
+    const templateParams = {
+      username: name,
+      user_email: userEmail,
+      verification_link: `http://localhost:3000/verify/${encodeURIComponent(userEmail)}`
+    };
+    
+    emailjs.send('service_ietrg4z', 'template_uyqrgqk', templateParams,'0C95HxcjkNEf4VFYV')
+      .then((response) => {
+         console.log('Email successfully sent!', response);
+      })
+      .catch((err) => console.error('Failed to send email:', err));
+  }
+
+
+
   const onSubmit = async (data) => {
-    setIsLoading(true);
+    setIsLoading(true); 
+
     try {
-      const response = await fetch(config.baseUrl + "api/v1/customer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phoneNumber: data.phoneNumber,
-          addressLine1: data.address,
-          city: data.city,
-          postalCode: data.postalCode,
-          password: data.password,
-          status: "ACTIVE",
-          user: {
-            username: data.username,
-          },
-        }),
+  
+      const userCredential = await createUserWithEmailAndPassword(
+        database,
+        data.email,
+        data.password
+      );
+
+      await addDoc(usersCollectionRef, {
+        userID: `user${randomID}`,
+        userName: data.firstName + " " + data.lastName,
+        phoneNumber: data.phoneNumber,
+        address: data.address,
+        city: data.city,
+        postalCode: data.postalCode,
+        email:data.email,
+        userType: "USER",
+        status: "ACTIVE",
+        flag:0,
+        lastUpdateUser: data.firstName + " " + data.lastName,
+        createTime: currentTime,
+        lastUpdateTime: currentTime,
       });
 
-      if (response.ok) {
-        const result = await response.json();
-        Swal.fire({
-          icon: "success",
-          title: "Register Success",
-          text: "Check The Email To Activate The Account",
-        });
-        reset();
-      } else {
-        const errorData = await response.json();
-        console.error("Error:", errorData);
-        Swal.fire({
-          icon: "error",
-          title: "Register Failed",
-          text: errorData.data,
-        });
-      }
+      const userIP = "0.0.0.0"; 
+      
+      await addDoc(audittraceCollectionRef, {
+        AUDITTRACEID: `trace${randomID}`, 
+        CREATEDTIME: currentTime,
+        DESCRIPTION: "User registered",
+        IP: userIP,
+        LASTUPDATEDTIME: currentTime,
+        LASTUPDATEDUSER: data.firstName + " " + data.lastName,
+        EMAIL: data.email
+      });
+
+      sendWelcomeEmail(data.email,data.firstName,data.email);
+
+      // Display success alert
+      Swal.fire({
+        title: "Success!",
+        text: "Registration successful!",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      reset({
+        username: '',
+        firstName: '',
+        lastName: '',
+        dateOfBirth: '',
+        address: '',
+        city: '',
+        postalCode: '',
+        phoneNumber: '',
+        email: '',
+        password: ''
+      });
+      
+      
+
+
     } catch (error) {
-      console.error(error);
+      console.error("Error in user creation:", error.message);
+
+      // Check error code and display relevant message
+      let errorMessage = "An error occurred during registration.";
+      if (error.code === "auth/email-already-in-use") {
+        errorMessage = "This email is already registered.";
+      }
+
+      // Display error alert
+      Swal.fire({
+        title: "Error!",
+        text: errorMessage,
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Set loading to false after submitting
     }
   };
+
+  
 
   return (
     <>
@@ -271,9 +340,7 @@ export default function RegisterForm() {
           alignItems="center"
           justifyContent="space-between"
           sx={{ my: 2 }}
-        >
-
-        </Stack>
+        ></Stack>
 
         <LoadingButton
           fullWidth

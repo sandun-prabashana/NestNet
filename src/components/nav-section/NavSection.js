@@ -1,9 +1,9 @@
-import PropTypes from 'prop-types';
-import { NavLink as RouterLink } from 'react-router-dom';
+import PropTypes from "prop-types";
+import { NavLink as RouterLink } from "react-router-dom";
 // @mui
-import { Box, List, ListItemText } from '@mui/material';
+import { Box, List, ListItemText } from "@mui/material";
 //
-import { StyledNavItem, StyledNavItemIcon } from './styles';
+import { StyledNavItem, StyledNavItemIcon } from "./styles";
 
 // ----------------------------------------------------------------------
 
@@ -16,7 +16,9 @@ export default function NavSection({ data = [], ...other }) {
     <Box {...other}>
       <List disablePadding sx={{ p: 1 }}>
         {data.map((item) => (
-          <NavItem key={item.title} item={item} />
+          <Box key={item.title} mb={2}>
+            <NavItem item={item} />
+          </Box>
         ))}
       </List>
     </Box>
@@ -37,10 +39,11 @@ function NavItem({ item }) {
       component={RouterLink}
       to={path}
       sx={{
-        '&.active': {
-          color: 'text.primary',
-          bgcolor: 'action.selected',
-          fontWeight: 'fontWeightBold',
+        bgcolor: 'white',
+        "&.active": {
+          color: "text.primary",
+          bgcolor: "action.selected",
+          fontWeight: "fontWeightBold",
         },
       }}
     >

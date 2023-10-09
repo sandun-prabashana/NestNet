@@ -16,25 +16,45 @@ import Product  from './pages/ProductsPage'
 import PurchasePage from './pages/purchase/PurchasePage';
 import AdminPage from './pages/admin/AdminPage';
 import LoanPage from './pages/loan/LoanPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import PropertiesGrid from './pages/properties/PropertiesGrid';
+import DashboardAppAdminPage from './pages/admindashboard/DashboardAppAdminPage';
+import AdsForAdmin from './pages/adsforadmin/AdsForAdmin';
+import Audittrace from './pages/Audittrace';
 
 // ----------------------------------------------------------------------
 
 export default function Router() {
   const routes = useRoutes([
     {
+      path: '/user',
+      element: <DashboardLayout />,
+      children: [
+        { element: <Navigate to="/user/dashboard" />, index: true },
+        {path: "", element: <Navigate to="/user/dashboard"/>},
+        { path: 'dashboard', element: <DashboardAppPage /> },
+        { path: 'ads', element: <PropertiesGrid /> },
+        { path: 'add', element: <BrandPage /> },
+        { path: 'produclist', element: <Product /> },
+        { path: 'purchase', element: <PurchasePage /> },
+        { path: 'admin', element: <AdminPage /> },
+        { path: 'loan', element: <LoanPage /> },
+      ],
+    },
+    {
       path: '/admin',
       element: <DashboardLayout />,
       children: [
         { element: <Navigate to="/admin/dashboard" />, index: true },
         {path: "", element: <Navigate to="/admin/dashboard"/>},
-        { path: 'dashboard', element: <DashboardAppPage /> },
+        { path: 'dashboard', element: <DashboardAppAdminPage /> },
         { path: 'user', element: <UserPage /> },
-        { path: 'product', element: <ProductsPage /> },
-        { path: 'category', element: <CategoryPage /> },
-        { path: 'brand', element: <BrandPage /> },
+        { path: 'ads', element: <AdsForAdmin /> },
+        { path: 'audittrace', element: <Audittrace /> },
+        { path: 'brand', element: <Audittrace /> },
         { path: 'produclist', element: <Product /> },
         { path: 'purchase', element: <PurchasePage /> },
-        { path: 'admin', element: <AdminPage /> },
+        { path: 'admin', element: <Audittrace /> },
         { path: 'loan', element: <LoanPage /> },
       ],
     },
@@ -47,6 +67,7 @@ export default function Router() {
           {path: "404", element: <Page404/>},
           {path: "/", element: <WelcomePage/>},
           {path: "*", element: <Navigate to="/404"/>},
+          {path: 'verify/:token', element: <EmailVerificationPage />},
       ],
   },
 

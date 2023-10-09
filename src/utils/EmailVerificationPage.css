@@ -1,0 +1,7 @@
+.verification-container {
+    background: url('../images/store.jpg') center/cover no-repeat;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
