@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import { collection, getDocs, query, where } from 'firebase/firestore'; 
 import { db } from "../../../pages/FireBaseConfig2";
 import { Avatar, Button, Typography, Paper, Grid } from '@mui/material';
+import UserImage from '../../../images/assets/images/avatars/avatar_4.jpg';
+
 
 Modal.setAppElement('#root');
 
@@ -63,7 +65,7 @@ function UserProfile({ isModalOpen, handleCloseModal, userEmail }) {
             <Paper elevation={3} style={{ padding: '20px', width: '100%', textAlign: 'center' }}>
                 {/* Add Avatar here */}
                 <Avatar 
-                    src='/assets/images/avatars/avatar_default.jpg' 
+                    src={UserImage} 
                     alt={user.userName} 
                     style={{ width: '80px', height: '80px', margin: '0 auto 20px' }}
                 />

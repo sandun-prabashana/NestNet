@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../pages/FireBaseConfig2";
 import { collection, getDocs, query, where } from "firebase/firestore";
-
+import LoadingImage from '../../images/assets/images/loading.gif';
 import {
   Card,
   CardMedia,
@@ -226,7 +226,7 @@ export default function PropertiesGrid() {
           alignItems="center"
           minHeight="100vh"
         >
-          <img src="/assets/images/loading.gif" alt="Loading..." />
+          <img src={LoadingImage} alt="Loading..." />
         </Box>
       ) : (
         <>

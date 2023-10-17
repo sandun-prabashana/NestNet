@@ -21,6 +21,7 @@ import PropertiesGrid from './pages/properties/PropertiesGrid';
 import DashboardAppAdminPage from './pages/admindashboard/DashboardAppAdminPage';
 import AdsForAdmin from './pages/adsforadmin/AdsForAdmin';
 import Audittrace from './pages/Audittrace';
+import FeedbacksPage from './pages/Feedbacks/FeedbacksPage';
 
 // ----------------------------------------------------------------------
 
@@ -35,10 +36,6 @@ export default function Router() {
         { path: 'dashboard', element: <DashboardAppPage /> },
         { path: 'ads', element: <PropertiesGrid /> },
         { path: 'add', element: <BrandPage /> },
-        { path: 'produclist', element: <Product /> },
-        { path: 'purchase', element: <PurchasePage /> },
-        { path: 'admin', element: <AdminPage /> },
-        { path: 'loan', element: <LoanPage /> },
       ],
     },
     {
@@ -51,11 +48,7 @@ export default function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'ads', element: <AdsForAdmin /> },
         { path: 'audittrace', element: <Audittrace /> },
-        { path: 'brand', element: <Audittrace /> },
-        { path: 'produclist', element: <Product /> },
-        { path: 'purchase', element: <PurchasePage /> },
-        { path: 'admin', element: <Audittrace /> },
-        { path: 'loan', element: <LoanPage /> },
+        { path: 'feedback', element: <FeedbacksPage/> },
       ],
     },
        {
@@ -70,6 +63,7 @@ export default function Router() {
           {path: 'verify/:token', element: <EmailVerificationPage />},
       ],
   },
+
 
   ]);
 

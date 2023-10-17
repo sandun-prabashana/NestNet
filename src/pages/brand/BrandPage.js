@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 
+import InputAdornment from "@mui/material/InputAdornment";
 import { useForm, Controller } from "react-hook-form";
 import { LoadingButton } from "@mui/lab";
 import { v4 } from "uuid";
@@ -27,6 +28,8 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../pages/FireBaseConfig3";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import { collection, addDoc } from "firebase/firestore";
+import "../../utils/Feedback.css";
+import "../../utils/feedback.js";
 
 const MyGoogleMap = ({ onMarkerDragEnd }) => {
   const mapRef = useRef();
@@ -127,34 +130,33 @@ export default function BrandPage() {
   const img3Ref = useRef();
 
   const handleReset = () => {
+    
     // ... your existing reset logic
-  
+
     // Reset file inputs by directly manipulating the DOM elements
     if (img1Ref.current) img1Ref.current.value = "";
     if (img2Ref.current) img2Ref.current.value = "";
     if (img3Ref.current) img3Ref.current.value = "";
-  
+
     // Reset image URLs
     setImg1("");
     setImg2("");
     setImg3("");
-  
+
     // Reset the isUploaded states
     setIsImg1Uploaded(false);
     setIsImg2Uploaded(false);
     setIsImg3Uploaded(false);
-  
+
     // Log for debugging
-    console.log('Resetting...');
-    console.log('isImg1Uploaded:', isImg1Uploaded);
-    console.log('isImg2Uploaded:', isImg2Uploaded);
-    console.log('isImg3Uploaded:', isImg3Uploaded);
-  
+    console.log("Resetting...");
+    console.log("isImg1Uploaded:", isImg1Uploaded);
+    console.log("isImg2Uploaded:", isImg2Uploaded);
+    console.log("isImg3Uploaded:", isImg3Uploaded);
+
     reset({});
     setKey((prevKey) => prevKey + 1);
   };
-
-
 
   const usersCollectionRef = collection(db, "posts");
 
@@ -196,12 +198,111 @@ export default function BrandPage() {
 
   const currentTime = new Date().toISOString();
 
-
   const unique_id = v4();
   const small_id = unique_id.slice(0, 8);
 
   const onSubmit = async (data) => {
     setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("Baths", data.bathrooms);
+      formData.append("Beds", data.bedrooms);
+      formData.append("District_Colombo", 0);
+      formData.append("District_Gampaha", 0);
+      formData.append("House_size", data.houseSize);
+      formData.append("Land_size", data.landSize);
+      formData.append("Lat", parseFloat(data.longitude.toFixed(5)));
+      formData.append("Lon", parseFloat(data.latitude.toFixed(5)));
+      if (data.hasCCTV) {
+        formData.append("has_cctv", 1);
+      } else {
+        formData.append("has_cctv", 0);
+      }
+      if (data.hasGarage) {
+        formData.append("has_garage", 1);
+      } else {
+        formData.append("has_garage", 0);
+      }
+      if (data.hasGarden) {
+        formData.append("has_garden", 1);
+      } else {
+        formData.append("has_garden", 0);
+      }
+      if (data.hasPool) {
+        formData.append("has_pool", 1);
+      } else {
+        formData.append("has_pool", 0);
+      }
+      formData.append("story", data.stories);
+
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const formattedPrice = new Intl.NumberFormat("en-US", {
+          style: "decimal",
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(responseData.prediction);
+        console.log("a" + responseData.prediction);
+        console.log("aaaa" + formattedPrice);
+        Swal.fire({
+          title: "Price Prediction",
+          text: `The predicted price is ${formattedPrice}. Would you like to add the post at this price?`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonText: "Yes",
+          cancelButtonText: "No",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            // Save data to Firebase
+            addDataToFirebase(data, formattedPrice); // Assuming this function handles saving data to Firebase
+          }
+        });
+      } else {
+        console.error("Server Response: ", response.statusText);
+        Swal.fire("Oops...", "Something went wrong!", "error");
+      }
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      Swal.fire("Oops...", "Something went wrong!", "error");
+    } finally {
+      setIsLoading(false);
+    }
+    setIsLoading(false);
+  };
+
+  const addDataToFirebase = async (data, formattedPrice) => {
+    setIsLoading(true);
+    document.addEventListener("mouseover", function (e) {
+      if (e.target.closest("#star-rating")) {
+        const star = e.target;
+        if (star.tagName === "SPAN") {
+          star.classList.add("selected");
+          star.previousElementSibling &&
+            star.previousElementSibling.classList.add("selected");
+          star.nextElementSibling &&
+            star.nextElementSibling.classList.remove("selected");
+        }
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (e.target.closest("#star-rating")) {
+        const star = e.target;
+        if (star.tagName === "SPAN") {
+          const allStars = document.querySelectorAll("#star-rating span");
+          allStars.forEach((s) => s.classList.remove("selected"));
+          star.classList.add("selected");
+          star.previousElementSibling &&
+            star.previousElementSibling.classList.add("selected");
+        }
+      }
+    });
 
     try {
       await addDoc(usersCollectionRef, {
@@ -227,7 +328,7 @@ export default function BrandPage() {
         hasGarden: data.hasGarden,
 
         description: data.description,
-        price: "2000000.00",
+        price: formattedPrice,
 
         createTime: currentTime,
 
@@ -238,32 +339,102 @@ export default function BrandPage() {
         image3: img3,
       });
 
-      const userIP = "0.0.0.0"; 
+      const userIP = "0.0.0.0";
 
       await addDoc(audittraceCollectionRef, {
-        AUDITTRACEID: `trace${randomID}`, 
+        AUDITTRACEID: `trace${randomID}`,
         CREATEDTIME: currentTime,
-        DESCRIPTION: "Add Ad (Ad ID : "+small_id+")",
+        DESCRIPTION: "Add Ad (Ad ID : " + small_id + ")",
         IP: userIP,
         LASTUPDATEDTIME: currentTime,
         LASTUPDATEDUSER: sessionStorage.getItem("name"),
         EMAIL: sessionStorage.getItem("email"),
       });
 
-      // Optionally, reset the form after submitting.
+ 
       handleReset();
 
-      // Optionally, display a success message using SweetAlert2.
-      Swal.fire("Good job!", "Your post has been saved!", "success");
+
+      // Swal.fire("Good job!", "Your post has been saved!", "success");
+      Swal.fire({
+        title: "Good job!",
+        text: "Your post has been saved!",
+        icon: "success",
+        confirmButtonText: "Give Feedback",
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Show feedback form
+          Swal.fire({
+            title: "Your Feedback",
+            html: `
+                    <textarea id="feedback-description" placeholder="Your feedback..."></textarea>
+                    <p>Rate us:</p>
+                    <div id="star-rating">
+                        <span data-value="1">☆</span>
+                        <span data-value="2">☆</span>
+                        <span data-value="3">☆</span>
+                        <span data-value="4">☆</span>
+                        <span data-value="5">☆</span>
+                    </div>
+                `,
+            confirmButtonText: "Submit",
+            focusConfirm: false,
+            preConfirm: () => {
+              const description = Swal.getPopup().querySelector(
+                "#feedback-description"
+              ).value;
+              const star =
+                Swal.getPopup()
+                  .querySelector("#star-rating .selected")
+                  ?.getAttribute("data-value") || 0;
+
+              // Validation for empty textarea
+              if (!description.trim()) {
+                return Swal.showValidationMessage("Feedback cannot be empty");
+              }
+
+              return { description, star };
+            },
+          }).then((feedback) => {
+            if (feedback.value) {
+              // Check if feedback exists before trying to save it
+              // Save feedback data to database
+              addFeedbackToFirebase(feedback.value);
+            }
+          });
+        }
+      });
     } catch (e) {
       console.error("Error adding document: ", e);
-
+      setIsLoading(false);
       // Optionally, display an error message using SweetAlert2.
       Swal.fire("Oops...", "Something went wrong!", "error");
-    } finally {
+    }finally{
       setIsLoading(false);
     }
-    setIsLoading(false);
+  };
+
+  const feedbacksCollectionRef = collection(db, "feedbacks");
+
+  const addFeedbackToFirebase = async ({ description, star }) => {
+    setIsLoading(true);
+    try {
+      await addDoc(feedbacksCollectionRef, {
+        description,
+        star,
+        createTime: new Date().toISOString(),
+        read:"0",
+        // Additional data like post ID, user ID, etc. can be added here
+      });
+
+      Swal.fire("Thank you!", "Your feedback has been recorded.", "success");
+    } catch (e) {
+      console.error("Error adding feedback: ", e);
+      Swal.fire("Oops...", "Unable to save your feedback!", "error");
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -345,6 +516,13 @@ export default function BrandPage() {
                       type="number"
                       error={Boolean(errors.landSize)}
                       helperText={errors.landSize?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            perches
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />
@@ -364,6 +542,13 @@ export default function BrandPage() {
                       type="number"
                       error={Boolean(errors.houseSize)}
                       helperText={errors.houseSize?.message}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            square meters
+                          </InputAdornment>
+                        ),
+                      }}
                     />
                   )}
                 />

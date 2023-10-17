@@ -4,6 +4,8 @@ import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../../../pages/FireBaseConfig2";
 import { useNavigate } from 'react-router-dom';
 import UserProfile from '../profile/UserProfile';
+import AvatarImage from '../../../images/assets/images/avatars/avatar_default.jpg';
+
 
 export default function AccountPopover() {
     const [open, setOpen] = useState(null);
@@ -50,7 +52,7 @@ export default function AccountPopover() {
     return (
         <>
             <IconButton onClick={handleOpen}>
-                <Avatar src='/assets/images/avatars/avatar_default.jpg' alt={displayName} />
+                <Avatar src={AvatarImage} alt={displayName} />
             </IconButton>
 
             <Popover

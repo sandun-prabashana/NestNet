@@ -5,6 +5,10 @@ import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db } from "../pages/FireBaseConfig2";
 import EditIcon from "@mui/icons-material/Edit";
 import { updateDoc, doc } from "firebase/firestore";
+import SoldImage from '../images/assets/images/sold.png';
+import LoadingImage from '../images/assets/images/loading.gif';
+
+
 import {
   Card,
   CardMedia,
@@ -367,7 +371,7 @@ export default function DashboardAppPage() {
             alignItems="center"
             minHeight="100vh"
           >
-            <img src="/assets/images/loading.gif" alt="Loading..." />
+            <img src={LoadingImage} alt="Loading..." />
           </Box>
         ) : (
           <>
@@ -399,7 +403,7 @@ export default function DashboardAppPage() {
                     />
                     {property.status === "SOLD" && (
                       <img
-                      src="/assets/images/sold.png"
+                      src={SoldImage}
                         alt="Sold"
                         style={{
                           position: "absolute",

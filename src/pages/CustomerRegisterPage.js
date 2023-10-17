@@ -11,6 +11,8 @@ import Logo from "../components/logo";
 import Iconify from "../components/iconify";
 // sections
 import { RegisterForm } from "../sections/auth/register";
+import SignUpImage from '../images/assets/illustrations/signup.svg';
+
 
 // ----------------------------------------------------------------------
 
@@ -89,7 +91,7 @@ export default function LoginPage() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src="/assets/illustrations/signup.svg" alt="login" />
+            <img src={SignUpImage} alt="login" />
           </StyledSection>
         )}
 

@@ -9,6 +9,8 @@ import Logo from '../components/logo';
 import Iconify from '../components/iconify';
 // sections
 import { LoginForm } from '../sections/auth/login';
+import loginImage from '../images/assets/illustrations/illustration_login.png';
+
 
 // ----------------------------------------------------------------------
 
@@ -63,7 +65,7 @@ export default function LoginPage() {
             <Typography variant="h3" sx={{ px: 5, mt: 10, mb: 5 }}>
               Hi, Welcome Back
             </Typography>
-            <img src="/assets/illustrations/illustration_login.png" alt="login" />
+            <img src={loginImage} alt="login" />
           </StyledSection>
         )}
 

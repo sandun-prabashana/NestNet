@@ -1,0 +1,23 @@
+#star-rating span {
+  cursor: pointer;
+  font-size: 24px;
+  color: #ccc;
+}
+
+#star-rating span.selected {
+  color: gold;
+}
+
+#star-rating span:hover ~ span,
+#star-rating span:hover {
+  color: #ccc !important;
+}
+
+#star-rating span.selected ~ span {
+  color: gold !important;
+}
+
+textarea {
+  width: 100%;
+  margin-bottom: 16px;
+}

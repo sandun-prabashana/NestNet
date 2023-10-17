@@ -30,6 +30,9 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 
+import SoldImage from '../../images/assets/images/sold.png';
+
+
 // import "../../utils/property.css";
 
 export default function AdsForAdmin() {
@@ -202,7 +205,7 @@ export default function AdsForAdmin() {
                     />
                     {property.status === "SOLD" && (
                       <img
-                        src="/assets/images/sold.png"
+                        src={SoldImage}
                         alt="Sold"
                         style={{
                           position: "absolute",
